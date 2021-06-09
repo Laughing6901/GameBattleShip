@@ -5,6 +5,7 @@ export default class ComputerScene extends Phaser.Scene {
   #battleship;
   #name = "ComputerScene";
   #btn;
+  #sceneDone = false;
 
   constructor(battleship) {
     super("ComputerScene");
@@ -26,16 +27,26 @@ export default class ComputerScene extends Phaser.Scene {
     //this.#battleship.getComputer().getBoard().moveToBack();
     var computer = this.#battleship.getComputer();
 
-    if (computer.lose()) return;
+    if (computer.lose()) {
+      // Congratulation
+      computer
+        .getBoard()
+        .getBoard()
+        [Math.floor(Math.random() * 10)][
+          Math.floor(Math.random() * 10)
+        ].shoot();
 
+      if (!this.#sceneDone) {
+        this.#sceneDone = true;
+        setTimeout(() => {
+          this.scene.start("ResultScene", { message: "Player" });
+        }, 6000);
+      }
+    }
     computer.update(this.#name);
     // Switch screen
-    if (computer.getTurn()) {
-      this.#btn.setSetupDone(true);
-      //setTimeout(() => this.scene.switch("PlayerScene"), 3000);
-      //this.scene.pause();
-    } else {
-      this.#btn.setSetupDone(false);
-    }
+    computer.getTurn()
+      ? this.#btn.setSetupDone(true)
+      : this.#btn.setSetupDone(false);
   }
 }
