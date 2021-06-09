@@ -151,6 +151,85 @@ export default class Computer {
           }
         });
       });
+    } else if (this.#mode === "TARGET") {
+      //console.log("TARGET MODE");
+      // Calculate probability for target mode
+      this.#sqrTarget.map((sqr) => {
+        opponentShips.map((ship) => {
+          if (ship.sunk()) return;
+
+          // TODO: chek horizontal
+          for (let i = sqr.getX(); i > sqr.getX() - ship.getLength(); --i) {
+            // Move to next position if ship not fit the square
+            if (i + ship.getLength() > opponentBoard.getWidth()) continue;
+            // Check the square which ship place on is MISS -> break loop
+            let checkValid = true;
+            for (let j = i; j < i + ship.getLength(); ++j) {
+              let sqrCheck = opponentBoard.getBoard()[j][sqr.getY()];
+              // MISS
+              if (sqrCheck.getStatus() === "MISS") {
+                checkValid = false;
+                break;
+              }
+            }
+
+            // Increase the probability of square which can place ship but not
+            // shooted
+            if (checkValid) {
+              for (let j = i; j < i + ship.getLength(); ++j) {
+                let sqrCheck = opponentBoard.getBoard()[j][sqr.getY()];
+                if (!sqrCheck.getShoot()) {
+                  sqrCheck.increaseProba(1);
+                  // Check proba highest or not
+                  if (sqrCheck.getProba() > highestProba) {
+                    highestProba = sqrCheck.getProba();
+                  }
+                }
+              }
+            }
+
+            // Check if go to the first column -> break loop
+            if (i === 0) break;
+          }
+
+          // TODO: check vertical
+          for (let i = sqr.getY(); i > sqr.getY() - ship.getLength(); --i) {
+            // Go back 1 square if ship not fit the square
+            if (i + ship.getLength() > opponentBoard.getHeight()) continue;
+            // Check the square which ship place on is MISS -> break loop
+            let checkValid = true;
+            for (let j = i; j < i + ship.getLength(); ++j) {
+              let sqrCheck = opponentBoard.getBoard()[sqr.getX()][j];
+              // MISS
+              if (sqrCheck.getStatus() === "MISS") {
+                checkValid = false;
+                break;
+              }
+            }
+
+            // Increase the probability of square which can place ship but not
+            // shooted
+            if (checkValid) {
+              for (let j = i; j < i + ship.getLength(); ++j) {
+                let sqrCheck = opponentBoard.getBoard()[sqr.getX()][j];
+                if (!sqrCheck.getShoot()) {
+                  sqrCheck.increaseProba(1);
+                  // Check proba highest or not
+                  if (sqrCheck.getProba() > highestProba) {
+                    highestProba = sqrCheck.getProba();
+                  }
+                }
+              }
+            }
+
+            // Check if go to the first row -> break loop
+            if (i === 0) break;
+          }
+        });
+
+        // Select the square which has highest proba to shoot and add to
+        // sqrTarget
+      });
     }
   }
 
