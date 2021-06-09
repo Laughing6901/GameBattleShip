@@ -5,6 +5,7 @@ import Background from "./src/Scenes/Background.js";
 import SetupScene from "./src/Scenes/SetupScene.js";
 import ComputerScene from "./src/Scenes/ComputerScene.js";
 import PlayerScene from "./src/Scenes/PlayerScene.js";
+import ResultScene from "./src/Scenes/ResultScene.js";
 
 var battleship = new Game();
 
@@ -20,7 +21,7 @@ var phaserConfig = {
     width: config.phaser.width,
     height: config.phaser.height,
   },
-  scene: [Background, Setup, Computer, Player],
+  scene: [Background, Setup, Computer, Player, ResultScene],
 };
 
 var game = new Phaser.Game(phaserConfig);
