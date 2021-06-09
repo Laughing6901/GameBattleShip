@@ -7,7 +7,7 @@ export default class Background extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image("background", "../../assets/sky.png");
+    this.load.image("background", "../../assets/background/sky.png");
   }
 
   create() {
