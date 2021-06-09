@@ -26,12 +26,25 @@ export default class StartBtn {
       "btnBackground",
       "../../assets/UI_Btn/button-bg.png"
     );
-    this.#phaser.load.image("btnText", "../../assets/UI_Btn/button-text.png");
+    this.#phaser.load.image("play", "../../assets/UI_Btn/play.png");
+    this.#phaser.load.image("ready", "../../assets/UI_Btn/ready.png");
+    this.#phaser.load.image("endTurn", "../../assets/UI_Btn/endturn.png");
   }
 
   create(scene) {
     var bg = this.#phaser.add.image(0, 0, "btnBackground").setScale(0.5);
-    var text = this.#phaser.add.image(0, 0, "btnText").setScale(0.5);
+    var text;
+    switch (scene) {
+      case "SetupScene":
+        text = this.#phaser.add.image(0, 0, "play").setScale(0.35);
+        break;
+      case "ComputerScene":
+        text = this.#phaser.add.image(0, 0, "endTurn").setScale(0.35);
+        break;
+      case "PlayerScene":
+        text = this.#phaser.add.image(0, 0, "ready").setScale(0.35);
+        break;
+    }
 
     this.#container = this.#phaser.add
       .container(config.phaser.width / 2, config.phaser.height - HEIGHT / 3, [
