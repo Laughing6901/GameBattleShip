@@ -12,7 +12,12 @@ export default class Game {
     this.#computer = new Computer(false);
   }
 
-  swapTurn() {}
+  swapTurn() {
+    if (!this.#computer.lose() && !this.#player.lose()) {
+      this.#player.swapTurn();
+      this.#computer.swapTurn();
+    }
+  }
 
   preload(scene) {
     this.#player.preload(scene);
