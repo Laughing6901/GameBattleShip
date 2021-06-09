@@ -68,7 +68,91 @@ export default class Computer {
     });
   }
 
-  shoot() {}
+  shoot(player) {
+    var opponentBoard = player.getBoard();
+    var opponentShips = player.getShips();
+
+    // Store the highest proba and the array of squares have this proba
+    var highestProba = 0;
+    var highestSqr = [];
+
+    // Reset probability before calculate new proba
+    opponentBoard.resetProba();
+
+    if (this.#mode === "HUNT") {
+      //console.log("HUNT MODE");
+      // Calculate proba
+      opponentShips.map((ship) => {
+        // Don't check ship sunk
+        if (ship.sunk()) return;
+        opponentBoard.getBoard().map((row) => {
+          row.map((cell) => {
+            // TODO: HORIZONTAL
+            // Check if ship placed valid with the width of board first
+            if (cell.getX() + ship.getLength() <= opponentBoard.getWidth()) {
+              // Check all the squares which place ship valid
+              let checkValid = true;
+              for (let i = 0; i < ship.getLength(); i++) {
+                if (
+                  opponentBoard
+                    .getBoard()
+                    [cell.getX() + i][cell.getY()].getShoot()
+                ) {
+                  checkValid = false;
+                  break;
+                }
+              }
+              // Valid => then increase proba in each square
+              if (checkValid) {
+                for (let i = 0; i < ship.getLength(); i++) {
+                  opponentBoard
+                    .getBoard()
+                    [cell.getX() + i][cell.getY()].increaseProba(1);
+                }
+              }
+            }
+            // TODO: VERTICAL
+            if (cell.getY() + ship.getLength() <= opponentBoard.getHeight()) {
+              // Check all the squares which place ship valid
+              let checkValid = true;
+              for (let i = 0; i < ship.getLength(); i++) {
+                if (
+                  opponentBoard
+                    .getBoard()
+                    [cell.getX()][cell.getY() + i].getShoot()
+                ) {
+                  checkValid = false;
+                  break;
+                }
+              }
+              // Valid => then increase proba in each square
+              if (checkValid) {
+                for (let i = 0; i < ship.getLength(); i++) {
+                  opponentBoard
+                    .getBoard()
+                    [cell.getX()][cell.getY() + i].increaseProba(1);
+                }
+              }
+            }
+          });
+        });
+      });
+
+      // Generate more random for hunt mode
+      opponentBoard.getBoard().map((row) => {
+        row.map((cell) => {
+          if (cell.getShoot()) return;
+
+          cell.increaseProba(this.#randomInt(4));
+
+          // Find the highest proba
+          if (cell.getProba() > highestProba) {
+            highestProba = cell.getProba();
+          }
+        });
+      });
+    }
+  }
 
   swapTurn() {
     this.#turn = !this.#turn;
