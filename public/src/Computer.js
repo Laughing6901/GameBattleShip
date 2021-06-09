@@ -231,6 +231,55 @@ export default class Computer {
         // sqrTarget
       });
     }
+
+    // After update probability -> push all highest probability sqr to arr
+    opponentBoard
+      .getBoard()
+      .map((row) =>
+        row.map((cell) =>
+          cell.getProba() === highestProba ? highestSqr.push(cell) : null
+        )
+      );
+
+    //console.log(highestSqr);
+    // Shoot random square in the highestSqr
+    //console.log(highestProba);
+    //console.log(highestSqr);
+
+    var randomSqr = highestSqr[this.#randomInt(highestSqr.length)];
+    randomSqr.shoot();
+    // Hit a ship => change to target mode
+    if (this.#mode === "HUNT" && randomSqr.getShip()) {
+      this.#sqrTarget.push(randomSqr);
+      this.#mode = "TARGET";
+    } else if (this.#mode === "TARGET") {
+      if (randomSqr.getShip()) {
+        this.#sqrTarget.push(randomSqr);
+      }
+
+      // TODO: Check sunk ships and remove their position out of sqrTarget arr
+      opponentShips.map((ship) => {
+        if (ship.sunk()) {
+          // Clear all hit square to miss square
+          ship.getPos().map((sqr) => sqr.setStatus("MISS"));
+
+          this.#sqrTarget = this.#sqrTarget.filter(
+            (sqr) =>
+              !ship
+                .getPos()
+                .some(
+                  (sunkSqr) =>
+                    sqr.getX() === sunkSqr.getX() &&
+                    sqr.getY() === sunkSqr.getY()
+                )
+          );
+        }
+      });
+
+      if (!this.#sqrTarget.length) {
+        this.#mode = "HUNT";
+      }
+    }
   }
 
   swapTurn() {
